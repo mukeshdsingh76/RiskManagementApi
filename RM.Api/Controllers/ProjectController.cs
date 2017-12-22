@@ -61,7 +61,7 @@ namespace RM.Api.Controllers
         projectModel.Id = project.Id;
         projectModel.ProjectCode = project.ProjectCode;
         projectModel.StartDate = project.StartDate;
-        projectModel.Status = project.ProjectStatus.Status;
+        projectModel.Status = project.ProjectStatus?.Status;
         projectModel.Title = project.Title;
       }
       catch (Exception ex)
