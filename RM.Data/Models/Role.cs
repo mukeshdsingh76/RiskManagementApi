@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace RM.Data.Models
 {
-  public class Role
+  public class Role : IdentityRole
   {
-    [Key]
-    public int Id { get; set; }
-
-    public string Name { get; set; }
+    public string RoleName { get; set; }
   }
 }

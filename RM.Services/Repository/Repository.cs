@@ -18,14 +18,26 @@ namespace RM.Services.Repository
       _context = context;
     }
 
-    public IQueryable<T> GetAll()
+    public IQueryable<T> GetAll(bool eager = false)
     {
-      return _context.Set<T>();
+      var query = _context.Set<T>().AsQueryable();
+      if (eager)
+      {
+        foreach (var property in _context.Model.FindEntityType(typeof(T)).GetNavigations())
+          query = query.Include(property.Name);
+      }
+      return query;
     }
 
-    public virtual async Task<ICollection<T>> GetAllAsyn()
+    public virtual async Task<ICollection<T>> GetAllAsyn(bool eager = false)
     {
-      return await _context.Set<T>().ToListAsync().ConfigureAwait(false);
+      var query = _context.Set<T>().AsQueryable();
+      if (eager)
+      {
+        foreach (var property in _context.Model.FindEntityType(typeof(T)).GetNavigations())
+          query = query.Include(property.Name);
+      }
+      return await query.ToListAsync();
     }
 
     public virtual T Get(int id)

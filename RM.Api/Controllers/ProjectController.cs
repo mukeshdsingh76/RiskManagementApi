@@ -13,26 +13,28 @@ namespace RM.Api.Controllers
   public class ProjectController : Controller
   {
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectStatusRepository _projectStatusRepository;
 
-    public ProjectController(IProjectRepository projectRepository)
+    public ProjectController(IProjectRepository projectRepository, IProjectStatusRepository projectStatusRepository)
     {
       _projectRepository = projectRepository;
+      _projectStatusRepository = projectStatusRepository;
     }
 
-    [HttpGet("")]
-    public async Task<IActionResult> GetAll()
+    [HttpGet]
+    public async Task<IActionResult> Get()
     {
       var projectModels = new List<ProjectModel>();
       try
       {
-        foreach (var project in await _projectRepository.GetAllAsyn().ConfigureAwait(false))
+        foreach (var project in await _projectRepository.GetAllAsyn(true).ConfigureAwait(false))
         {
           projectModels.Add(new ProjectModel()
           {
             Id = project.Id,
             ProjectCode = project.ProjectCode,
             StartDate = project.StartDate,
-            Status = project.ProjectStatus?.Status,
+            Status = project.ProjectStatus?.Title,
             Title = project.Title
           });
         }
@@ -45,14 +47,14 @@ namespace RM.Api.Controllers
       return Ok(projectModels);
     }
 
-    [HttpGet("{id}", Name = "Get")]
+    [HttpGet("{id}", Name = "GetProject")]
     public async Task<IActionResult> Get(int id)
     {
       var projectModel = new ProjectModel();
 
       try
       {
-        var project = await _projectRepository.GetAsync(id).ConfigureAwait(false);
+        var project = await _projectRepository.GetProjectWithProjectStatus(id).ConfigureAwait(false);
         if (project == null)
         {
           return NotFound();
@@ -61,7 +63,7 @@ namespace RM.Api.Controllers
         projectModel.Id = project.Id;
         projectModel.ProjectCode = project.ProjectCode;
         projectModel.StartDate = project.StartDate;
-        projectModel.Status = project.ProjectStatus?.Status;
+        projectModel.Status = project.ProjectStatus?.Title;
         projectModel.Title = project.Title;
       }
       catch (Exception ex)
@@ -69,7 +71,7 @@ namespace RM.Api.Controllers
         return BadRequest(ex.Message);
       }
 
-      return new ObjectResult(projectModel);
+      return Ok(projectModel);
     }
 
     [HttpPost("create")]
@@ -83,25 +85,22 @@ namespace RM.Api.Controllers
             })
             .ConfigureAwait(false);
 
-      return CreatedAtRoute("Get", new { id = project.Id }, project);
+      return CreatedAtRoute("GetProject", new { id = project.Id }, project);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromBody] ProjectModel model)
     {
       if (model == null)
-      {
         return BadRequest();
-      }
 
       var project = _projectRepository.Get(id);
       if (project == null)
-      {
         return NotFound();
-      }
 
       project.Title = model.Title;
       project.StartDate = model.StartDate;
+      project.ProjectStatus = _projectStatusRepository.Find(_ => _.Title == model.Status);
 
       _projectRepository.Update(project, id);
       return new NoContentResult();
@@ -113,9 +112,7 @@ namespace RM.Api.Controllers
       var projectToDelete = await _projectRepository.GetAsync(id).ConfigureAwait(false);
 
       if (projectToDelete == null)
-      {
         return NotFound();
-      }
 
       await _projectRepository.DeleteAsyn(projectToDelete).ConfigureAwait(false);
 

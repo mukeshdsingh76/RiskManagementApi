@@ -7,8 +7,12 @@ using RM.Services.Interfaces;
 using RM.Data;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using RM.Data.Models;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace RM.Api
 {
@@ -26,6 +30,30 @@ namespace RM.Api
       string connectionString = Configuration.GetConnectionString("RMConnection");
       services.AddDbContext<RMContext>(option => option.UseSqlServer(connectionString));
 
+      services.AddIdentity<User, IdentityRole>()
+        .AddEntityFrameworkStores<RMContext>()
+        .AddDefaultTokenProviders();
+
+      services.Configure<IdentityOptions>(options =>
+      {
+        // Password settings
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = false;
+        options.Password.RequiredUniqueChars = 6;
+
+        // Lockout settings
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+        options.Lockout.MaxFailedAccessAttempts = 10;
+        options.Lockout.AllowedForNewUsers = true;
+
+        // User settings
+        options.User.RequireUniqueEmail = true;
+      });
+
+      services.AddTransient<IProjectStatusRepository, ProjectStatusRepository>();
       services.AddTransient<IUserRepository, UserRepository>();
       services.AddTransient<IProjectRepository, ProjectRepository>();
       services.AddTransient<IRiskRepository, RiskRepository>();
@@ -45,6 +73,8 @@ namespace RM.Api
         app.UseDeveloperExceptionPage();
       }
 
+      app.UseAuthentication();
+
       using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
       {
         var context = serviceScope.ServiceProvider.GetRequiredService<RMContext>();
@@ -57,9 +87,22 @@ namespace RM.Api
 
       app.UseSwagger();
       app.UseSwaggerUI(c =>
-       {
-         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-       });
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+      });
+
+      app.UseExceptionHandler(configure =>
+      {
+        configure.Run(async context =>
+        {
+          var ex = context.Features
+          .Get<IExceptionHandlerFeature>()
+          .Error;
+
+          context.Response.StatusCode = 500;
+          await context.Response.WriteAsync($"{ex.Message}").ConfigureAwait(false);
+        });
+      });
 
       app.UseMvc();
     }

@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace RM.Data.Models
+namespace RM.Api.Model
 {
-  public class Risk
+  public class RiskModel
   {
-    [Key]
     public int Id { get; set; }
-
     public string Title { get; set; }
     public string Description { get; set; }
     public DateTime? DateIdentified { get; set; }
-
-    [RegularExpression(@"^\d+(.\d{1,2})?$")]
     public decimal? OptimisticEstimate { get; set; }
-
-    [RegularExpression(@"^\d+(.\d{1,2})?$")]
     public decimal? MostLikelyEstimate { get; set; }
-
-    [RegularExpression(@"^\d+(.\d{1,2})?$")]
     public decimal? PessimisticEstimate { get; set; }
-
-    public virtual RiskStatus RiskStatus { get; set; }
-
-    public virtual Project Project { get; set; }
+    public string Status { get; set; }
+    public int ProjectId { get; set; }
   }
 }

@@ -36,9 +36,9 @@ namespace RM.Services.Interfaces
 
     T Get(int id);
 
-    IQueryable<T> GetAll();
+    IQueryable<T> GetAll(bool eager = false);
 
-    Task<ICollection<T>> GetAllAsyn();
+    Task<ICollection<T>> GetAllAsyn(bool eager = false);
 
     IQueryable<T> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties);
 

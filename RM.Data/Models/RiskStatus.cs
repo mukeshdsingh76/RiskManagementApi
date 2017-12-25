@@ -2,7 +2,7 @@
 
 namespace RM.Data.Models
 {
-  public class ProjectStatus
+  public class RiskStatus
   {
     [Key]
     public int Id { get; set; }
