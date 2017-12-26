@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using RM.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
 using RM.Api.Model;
 using RM.Data.Models;
+using RM.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RM.Api.Controllers
 {

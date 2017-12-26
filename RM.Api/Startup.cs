@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RM.Services.Repository;
-using RM.Services.Interfaces;
 using RM.Data;
-using Microsoft.EntityFrameworkCore;
-using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using RM.Data.Models;
-using Microsoft.AspNetCore.Identity;
+using RM.Services.Interfaces;
+using RM.Services.Repository;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 
 namespace RM.Api
@@ -30,7 +30,7 @@ namespace RM.Api
       string connectionString = Configuration.GetConnectionString("RMConnection");
       services.AddDbContext<RMContext>(option => option.UseSqlServer(connectionString));
 
-      services.AddIdentity<User, IdentityRole>()
+      services.AddIdentity<User, IdentityRole>(config => config.SignIn.RequireConfirmedEmail = true)
         .AddEntityFrameworkStores<RMContext>()
         .AddDefaultTokenProviders();
 
@@ -53,9 +53,10 @@ namespace RM.Api
         options.User.RequireUniqueEmail = true;
       });
 
-      services.AddTransient<IProjectStatusRepository, ProjectStatusRepository>();
       services.AddTransient<IUserRepository, UserRepository>();
+      services.AddTransient<IProjectStatusRepository, ProjectStatusRepository>();
       services.AddTransient<IProjectRepository, ProjectRepository>();
+      services.AddTransient<IRiskStatusRepository, RiskStatusRepository>();
       services.AddTransient<IRiskRepository, RiskRepository>();
 
       services.AddMvc();

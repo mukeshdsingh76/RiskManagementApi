@@ -10,8 +10,6 @@ namespace RM.Data
     {
     }
 
-    //public DbSet<Role> Role { get; set; }
-    //public DbSet<User> User { get; set; }
     public DbSet<Project> Project { get; set; }
 
     public DbSet<Risk> Risk { get; set; }
@@ -20,10 +18,7 @@ namespace RM.Data
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-      //builder.Entity<Project>()
-      //            .Property(p => p.ProjectCode)
-      //            .HasColumnName("ProjectCode")
-      //            .HasColumnType("string");
+      base.OnModelCreating(builder);
 
       builder.Entity<ProjectStatus>()
         .HasIndex(_ => _.Title)
