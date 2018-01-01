@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 using RM.Data;
-using RM.Data.Models;
 using RM.Services.Interfaces;
 using RM.Services.Repository;
 using Swashbuckle.AspNetCore.Swagger;
@@ -30,41 +30,42 @@ namespace RM.Api
       string connectionString = Configuration.GetConnectionString("RMConnection");
       services.AddDbContext<RMContext>(option => option.UseSqlServer(connectionString));
 
-      services.AddIdentity<User, IdentityRole>(config => config.SignIn.RequireConfirmedEmail = true)
-        .AddEntityFrameworkStores<RMContext>()
-        .AddDefaultTokenProviders();
-
-      services.Configure<IdentityOptions>(options =>
-      {
-        // Password settings
-        options.Password.RequireDigit = true;
-        options.Password.RequiredLength = 8;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireLowercase = false;
-        options.Password.RequiredUniqueChars = 6;
-
-        // Lockout settings
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-        options.Lockout.MaxFailedAccessAttempts = 10;
-        options.Lockout.AllowedForNewUsers = true;
-
-        // User settings
-        options.User.RequireUniqueEmail = true;
-      });
-
       services.AddTransient<IUserRepository, UserRepository>();
       services.AddTransient<IProjectStatusRepository, ProjectStatusRepository>();
       services.AddTransient<IProjectRepository, ProjectRepository>();
       services.AddTransient<IRiskStatusRepository, RiskStatusRepository>();
       services.AddTransient<IRiskRepository, RiskRepository>();
 
-      services.AddMvc();
-
-      services.AddSwaggerGen(c =>
+      services.AddCors(options =>
       {
-        c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+        options.AddPolicy("CorsPolicy",
+                  builder => builder.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials());
       });
+
+      //services.AddMvcCore()
+      //  .AddApiExplorer()
+      //  .AddAuthorization();
+
+      services.AddMvc()
+        .AddJsonOptions(options =>
+        {
+          options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+          options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+        });
+
+      services.AddAuthentication("Bearer")
+        .AddIdentityServerAuthentication(options =>
+        {
+          options.Authority = Configuration.GetValue<string>("IdentityServer");
+          options.RequireHttpsMetadata = false;
+
+          options.ApiName = "RiskManagement";
+        });
+
+      services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" }));
     }
 
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -74,23 +75,27 @@ namespace RM.Api
         app.UseDeveloperExceptionPage();
       }
 
-      app.UseAuthentication();
-
       using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
       {
         var context = serviceScope.ServiceProvider.GetRequiredService<RMContext>();
-        context.Database.EnsureCreated();
+        bool databaseExist = false;
 
-        //context.Database.Migrate();
-        //var databaseCreator = (RelationalDatabaseCreator)context.Database.GetService<IDatabaseCreator>();
-        //databaseCreator.CreateTables();
+        try { context.Database.EnsureCreated(); }
+        catch { databaseExist = true; }
+
+        if (databaseExist)
+        {
+          try
+          {
+            var databaseCreator = (RelationalDatabaseCreator)context.Database.GetService<IDatabaseCreator>();
+            databaseCreator.CreateTables();
+          }
+          catch (Exception ex) { Console.WriteLine(ex.Message); }
+        }
       }
 
       app.UseSwagger();
-      app.UseSwaggerUI(c =>
-      {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-      });
+      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
       app.UseExceptionHandler(configure =>
       {
@@ -105,7 +110,15 @@ namespace RM.Api
         });
       });
 
+      app.UseCors("CorsPolicy");
+      app.UseAuthentication();
       app.UseMvc();
+
+      app.Run(async (context) =>
+      {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        await context.Response.WriteAsync($"No endpoint found for request {context.Request.Path}").ConfigureAwait(false);
+      });
     }
   }
 }

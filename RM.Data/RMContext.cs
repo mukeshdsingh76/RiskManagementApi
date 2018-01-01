@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RM.Data.Models;
 
 namespace RM.Data
 {
-  public class RMContext : IdentityDbContext<User>
+  public class RMContext : DbContext
   {
     public RMContext(DbContextOptions option) : base(option)
     {
@@ -16,16 +15,16 @@ namespace RM.Data
     public DbSet<ProjectStatus> ProjectStatus { get; set; }
     public DbSet<RiskStatus> RiskStatus { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      base.OnModelCreating(builder);
+      base.OnModelCreating(modelBuilder);
 
-      builder.Entity<ProjectStatus>()
+      modelBuilder.Entity<ProjectStatus>()
         .HasIndex(_ => _.Title)
         .HasName("UK_ProjectStatus_Title")
         .IsUnique();
 
-      builder.Entity<RiskStatus>()
+      modelBuilder.Entity<RiskStatus>()
        .HasIndex(_ => _.Title)
        .HasName("UK_RiskStatus_Title")
        .IsUnique();

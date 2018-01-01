@@ -1,13 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Api", "RM.Api\RM.Api.csproj", "{59BAB8F8-6493-4BC1-BBE2-2018CAA9A1BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Data", "RM.Data\RM.Data.csproj", "{BC52A673-9858-4F42-935A-4BAAF2DA9B02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Services", "RM.Services\RM.Services.csproj", "{00A48162-3E60-4912-9CC4-BCB88FFC5811}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Services", "RM.Services\RM.Services.csproj", "{00A48162-3E60-4912-9CC4-BCB88FFC5811}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Auth", "RM.Auth\RM.Auth.csproj", "{A675F918-0CCD-4789-8970-2C8AB7CE7F1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4997E10-EF3D-449F-90BD-7E4FC02B232C}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.Txt = Readme.Txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.AuthServer", "RM.AuthServer\RM.AuthServer.csproj", "{495C2408-1DEE-4E2B-8DD7-F8A47F913B0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.AuthServer.Client", "RM.AuthServer.Client\RM.AuthServer.Client.csproj", "{27860AEE-248D-4E1E-A56E-05C03EC8BF8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +38,18 @@ Global
 		{00A48162-3E60-4912-9CC4-BCB88FFC5811}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00A48162-3E60-4912-9CC4-BCB88FFC5811}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00A48162-3E60-4912-9CC4-BCB88FFC5811}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A675F918-0CCD-4789-8970-2C8AB7CE7F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A675F918-0CCD-4789-8970-2C8AB7CE7F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A675F918-0CCD-4789-8970-2C8AB7CE7F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A675F918-0CCD-4789-8970-2C8AB7CE7F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{495C2408-1DEE-4E2B-8DD7-F8A47F913B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{495C2408-1DEE-4E2B-8DD7-F8A47F913B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{495C2408-1DEE-4E2B-8DD7-F8A47F913B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{495C2408-1DEE-4E2B-8DD7-F8A47F913B0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27860AEE-248D-4E1E-A56E-05C03EC8BF8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27860AEE-248D-4E1E-A56E-05C03EC8BF8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27860AEE-248D-4E1E-A56E-05C03EC8BF8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27860AEE-248D-4E1E-A56E-05C03EC8BF8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
