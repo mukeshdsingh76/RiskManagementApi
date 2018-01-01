@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RM.Auth.Extensions;
-using RM.Auth.Models;
 using RM.Auth.Models.ManageViewModels;
 using RM.Auth.Services;
 using System;

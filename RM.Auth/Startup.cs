@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using RM.Auth.Services;
 using RM.Data;
 using RM.Data.Models;
-using RM.Services.Interfaces;
-using RM.Services.Repository;
+using RM.Data.Repository;
+using RM.Data.Repository.Contract;
 using System;
 
 namespace RM.Auth

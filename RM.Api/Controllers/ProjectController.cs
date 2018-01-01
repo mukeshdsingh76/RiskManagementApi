@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RM.Api.Model;
 using RM.Data.Models;
-using RM.Services.Interfaces;
+using RM.Data.Repository.Contract;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace RM.Api.Controllers
       var projectModels = new List<ProjectModel>();
       try
       {
-        foreach (var project in await _projectRepository.GetAllAsyn(true).ConfigureAwait(false))
+        foreach (var project in await _projectRepository.GetAllAsynAsync(true).ConfigureAwait(false))
         {
           projectModels.Add(new ProjectModel()
           {
@@ -89,20 +89,20 @@ namespace RM.Api.Controllers
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] ProjectModel model)
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] ProjectModel model)
     {
       if (model == null)
         return BadRequest();
 
-      var project = _projectRepository.Get(id);
+      var project = await _projectRepository.GetAsync(id).ConfigureAwait(false);
       if (project == null)
         return NotFound();
 
       project.Title = model.Title;
       project.StartDate = model.StartDate;
-      project.ProjectStatus = _projectStatusRepository.Find(_ => _.Title == model.Status);
+      project.ProjectStatus = await _projectStatusRepository.FindAsync(_ => _.Title == model.Status);
 
-      _projectRepository.Update(project, id);
+      await _projectRepository.UpdateAsyn(project, id);
       return new NoContentResult();
     }
 

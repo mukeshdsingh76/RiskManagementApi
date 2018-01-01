@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RM.Api.Model;
 using RM.Data.Models;
-using RM.Services.Interfaces;
+using RM.Data.Repository.Contract;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace RM.Api.Controllers
       var riskStatusModels = new List<RiskStatusModel>();
       try
       {
-        foreach (var riskStatus in await _riskStatusRepository.GetAllAsyn().ConfigureAwait(false))
+        foreach (var riskStatus in await _riskStatusRepository.GetAllAsynAsync().ConfigureAwait(false))
         {
           riskStatusModels.Add(new RiskStatusModel()
           {
@@ -76,18 +76,18 @@ namespace RM.Api.Controllers
     }
 
     [HttpPut("{id}/{title}")]
-    public IActionResult Update(int id, string title)
+    public async Task<IActionResult> UpdateAsync(int id, string title)
     {
       if (id == default(int) || title?.Length == 0)
         return BadRequest();
 
-      var riskStatus = _riskStatusRepository.Get(id);
+      var riskStatus = await _riskStatusRepository.GetAsync(id);
       if (riskStatus == null)
         return NotFound();
 
       riskStatus.Title = title;
 
-      _riskStatusRepository.Update(riskStatus, id);
+      await _riskStatusRepository.UpdateAsyn(riskStatus, id);
       return new NoContentResult();
     }
 

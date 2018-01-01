@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RM.Data;
 using RM.Data.Models;
-using RM.Services.Interfaces;
+using RM.Data.Repository.Contract;
 using System.Threading.Tasks;
 
-namespace RM.Services.Repository
+namespace RM.Data.Repository
 {
   public class ProjectRepository : Repository<Project>, IProjectRepository
   {

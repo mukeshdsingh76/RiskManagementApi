@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RM.Api.Model;
 using RM.Data.Models;
-using RM.Services.Interfaces;
+using RM.Data.Repository.Contract;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ namespace RM.Api.Controllers
       var RiskModels = new List<RiskModel>();
       try
       {
-        foreach (var risk in await _riskRepository.GetAllAsyn().ConfigureAwait(false))
+        foreach (var risk in await _riskRepository.GetAllAsynAsync().ConfigureAwait(false))
         {
           RiskModels.Add(new RiskModel()
           {
@@ -41,7 +41,7 @@ namespace RM.Api.Controllers
             OptimisticEstimate = risk.OptimisticEstimate,
             PessimisticEstimate = risk.PessimisticEstimate,
             Status = risk.RiskStatus?.Title,
-            ProjectId = risk.Project.Id > default(int) ? _projectRepository.Get(risk.Project.Id).Id : default(int)
+            ProjectId = risk.Project.Id > default(int) ? _projectRepository.GetAsync(risk.Project.Id).Id : default(int)
           });
         }
       }
@@ -87,11 +87,11 @@ namespace RM.Api.Controllers
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody]RiskModel model)
     {
-      var project = _projectRepository.Get(model.ProjectId);
+      var project = await _projectRepository.GetAsync(model.ProjectId);
       if (project == null)
         return NotFound("Project not found");
 
-      var riskStatus = _riskStatusRepository.Find(_ => _.Title == model.Status);
+      var riskStatus = await _riskStatusRepository.FindAsync(_ => _.Title == model.Status);
       if (riskStatus == null)
         return NotFound("Risk Status not found");
 
@@ -113,12 +113,12 @@ namespace RM.Api.Controllers
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] RiskModel model)
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] RiskModel model)
     {
       if (model == null)
         return BadRequest();
 
-      var risk = _riskRepository.Get(id);
+      var risk = await _riskRepository.GetAsync(id);
       if (risk == null)
         return NotFound();
 
@@ -128,10 +128,10 @@ namespace RM.Api.Controllers
       risk.MostLikelyEstimate = model.MostLikelyEstimate;
       risk.OptimisticEstimate = model.OptimisticEstimate;
       risk.PessimisticEstimate = model.PessimisticEstimate;
-      risk.RiskStatus = _riskStatusRepository.Find(_ => _.Title == model.Status);
-      risk.Project = _projectRepository.Find(_ => _.Id == model.ProjectId);
+      risk.RiskStatus = await _riskStatusRepository.FindAsync(_ => _.Title == model.Status);
+      risk.Project = await _projectRepository.FindAsync(_ => _.Id == model.ProjectId);
 
-      _riskRepository.Update(risk, id);
+      await _riskRepository.UpdateAsyn(risk, id);
       return new NoContentResult();
     }
 

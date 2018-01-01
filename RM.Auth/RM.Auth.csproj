@@ -20,15 +20,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RM.Services\RM.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\js\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RM.Data.Repository.Contract\RM.Data.Repository.Contract.csproj" />
+    <ProjectReference Include="..\RM.Data.Repository\RM.Data.Repository.csproj" />
+    <ProjectReference Include="..\RM.Data\RM.Data.csproj" />
   </ItemGroup>
 
 </Project>

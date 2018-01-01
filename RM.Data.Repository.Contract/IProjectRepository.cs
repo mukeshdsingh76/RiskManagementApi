@@ -1,7 +1,7 @@
 ﻿using RM.Data.Models;
 using System.Threading.Tasks;
 
-namespace RM.Services.Interfaces
+namespace RM.Data.Repository.Contract
 {
   public interface IProjectRepository : IRepository<Project>
   {

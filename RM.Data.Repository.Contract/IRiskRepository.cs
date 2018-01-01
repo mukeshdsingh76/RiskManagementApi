@@ -1,6 +1,6 @@
 ﻿using RM.Data.Models;
 
-namespace RM.Services.Interfaces
+namespace RM.Data.Repository.Contract
 {
   public interface IRiskRepository : IRepository<Risk>
   {

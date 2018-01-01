@@ -9,8 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using RM.Data;
-using RM.Services.Interfaces;
-using RM.Services.Repository;
+using RM.Data.Repository;
+using RM.Data.Repository.Contract;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 

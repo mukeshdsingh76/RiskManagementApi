@@ -1,8 +1,7 @@
-﻿using RM.Data;
-using RM.Data.Models;
-using RM.Services.Interfaces;
+﻿using RM.Data.Models;
+using RM.Data.Repository.Contract;
 
-namespace RM.Services.Repository
+namespace RM.Data.Repository
 {
   public class RiskRepository : Repository<Risk>, IRiskRepository
   {

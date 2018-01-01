@@ -10,7 +10,6 @@ using RM.Auth.Extensions;
 using RM.Auth.Models.AccountViewModels;
 using RM.Auth.Quickstart.Account;
 using RM.Auth.Services;
-using RM.Data.Models;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -238,7 +237,7 @@ namespace RM.Auth.Controllers
       ViewData["ReturnUrl"] = returnUrl;
       if (ModelState.IsValid)
       {
-        var user = new User { UserName = model.Email, Email = model.Email };
+        var user = new Data.Models.User { UserName = model.Email, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
@@ -362,7 +361,7 @@ namespace RM.Auth.Controllers
         {
           throw new ApplicationException("Error loading external login information during confirmation.");
         }
-        var user = new User { UserName = model.Email, Email = model.Email };
+        var user = new Data.Models.User { UserName = model.Email, Email = model.Email };
         var result = await _userManager.CreateAsync(user);
         if (result.Succeeded)
         {

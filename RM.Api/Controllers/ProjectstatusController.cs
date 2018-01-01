@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RM.Api.Model;
 using RM.Data.Models;
-using RM.Services.Interfaces;
+using RM.Data.Repository.Contract;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,9 +14,9 @@ namespace RM.Api.Controllers
   {
     private readonly IProjectStatusRepository _projectStatusRepository;
 
-    public ProjectStatusController(IProjectStatusRepository projectRepository)
+    public ProjectStatusController(IProjectStatusRepository projectStatusRepository)
     {
-      _projectStatusRepository = projectRepository;
+      _projectStatusRepository = projectStatusRepository;
     }
 
     [HttpGet]
@@ -25,7 +25,7 @@ namespace RM.Api.Controllers
       var ProjectStatusModels = new List<ProjectStatusModel>();
       try
       {
-        foreach (var projectStatus in await _projectStatusRepository.GetAllAsyn().ConfigureAwait(false))
+        foreach (var projectStatus in await _projectStatusRepository.GetAllAsynAsync().ConfigureAwait(false))
         {
           ProjectStatusModels.Add(new ProjectStatusModel()
           {
@@ -76,18 +76,18 @@ namespace RM.Api.Controllers
     }
 
     [HttpPut("{id}/{title}")]
-    public IActionResult Update(int id, string title)
+    public async Task<IActionResult> UpdateAsync(int id, string title)
     {
       if (id == default(int) || title?.Length == 0)
         return BadRequest();
 
-      var projectStatus = _projectStatusRepository.Get(id);
+      var projectStatus = await _projectStatusRepository.GetAsync(id);
       if (projectStatus == null)
         return NotFound();
 
       projectStatus.Title = title;
 
-      _projectStatusRepository.Update(projectStatus, id);
+      await _projectStatusRepository.UpdateAsyn(projectStatus, id);
       return new NoContentResult();
     }
 
